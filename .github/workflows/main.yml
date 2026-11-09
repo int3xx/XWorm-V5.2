@@ -1,1 +1,38 @@
+name: Build C# Desktop Application
+
+on:
+  push:
+    branches: [ "main", "master" ]
+  pull_request:
+    branches: [ "main", "master" ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Setup MSBuild
+      uses: microsoft/setup-msbuild@v2
+
+    - name: Setup NuGet
+      uses: NuGet/setup-nuget@v2.0.1
+
+    - name: Restore NuGet packages
+      run: nuget restore
+
+    - name: Build Solution
+      run: |
+        msbuild /p:Configuration=Release /p:Platform="Any CPU"
+
+    - name: Upload Build Artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: built-executable
+        path: |
+          **/bin/Release/**/*.exe
+          **/bin/Release/**/*.dll
 
